@@ -4,6 +4,8 @@ const rcon = require("./rcon");
 const socket = require("./socket");
 const basicAuth = require("express-basic-auth");
 
+const server = require("./server");
+
 const port = 3000;
 
 app.use(basicAuth({
@@ -23,6 +25,8 @@ rcon.connect({
 }, (e) => {
     console.log(`connection failed ${e}`);
 });
+
+server.getServers();
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
