@@ -12,7 +12,7 @@ function validateServer(path) {
 }
 
 function getDirectories(path) {
-    return fs.readdirSync(path).map(name => fs.join(path, name)).filter(isDirectory && validateServer);
+    return fs.readdirSync(path).map(name => join(path, name)).filter(isDirectory && validateServer);
 }
 
 function getServers(path = "servers/") {
@@ -41,5 +41,7 @@ function removeServer() {
 }
 
 module.exports = {
-    getServers
+    getServers,
+    addServer,
+    removeServer
 }

@@ -27,6 +27,7 @@ rcon.connect({
 });
 
 server.getServers();
+server.addServer("csgo-test", "csgoserver");
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
