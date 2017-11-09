@@ -4,6 +4,8 @@ const rcon = require("./rcon");
 const socket = require("./socket");
 const basicAuth = require("express-basic-auth");
 
+const server = require("./server");
+
 const port = 3000;
 
 app.use(basicAuth({
