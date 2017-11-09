@@ -5,11 +5,18 @@ const connection = new WebSocket("ws://localhost:8080");
 connection.onopen = function () {
     // connection is opened and ready to use
     console.log("websocket connected");
+    log.style.borderColor = "green";
 };
 
 connection.onerror = function (error) {
     // an error occurred when sending/receiving data
+    var log = document.getElementById("log");
 };
+
+connection.onclose = function () {
+    var log = document.getElementById("log");
+    log.style.borderColor = "red";
+}
 
 connection.onmessage = function (message) {
     var log = document.getElementById("log");
