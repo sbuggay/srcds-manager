@@ -3,17 +3,19 @@ const rcon = require("./rcon");
 
 const wss = new WebSocket.Server({ port: 8080 });
 
-function messageHandler(message) {
-
-
-}
-
 function setupWebsocket() {
     wss.on("connection", function connection(connection) {
         connection.on("message", function (message) {
             const data = JSON.parse(message);
 
             switch (data.type) {
+                case "rcon-connect":
+                    
+                    break;
+
+                case "rcon-disconnect":
+
+                    break;
                 case "rcon-command":
                     console.log(`sending command ${data.data}`)
                     rcon.command(data.data).then((response) => {

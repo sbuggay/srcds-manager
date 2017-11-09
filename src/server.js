@@ -15,8 +15,9 @@ function getDirectories(path) {
     return fs.readdirSync(path).map(name => join(path, name)).filter(isDirectory && validateServer);
 }
 
+
 function getServers(path = "servers/") {
-    console.log(getDirectories(path));
+    return getDirectories(path);
 }
 
 function addServer(dir, serverType) {
@@ -29,15 +30,23 @@ function addServer(dir, serverType) {
     const downloadCommand = `cd ${dir}; wget -N --no-check-certificate https://gameservermanagers.com/dl/linuxgsm.sh && chmod +x linuxgsm.sh && bash linuxgsm.sh ${serverType}`;
     execSync(downloadCommand);
 
-    // run auto-install
-    const installCommand = `cd ${dir}; ./${serverType} auto-install`;
-    execSync(installCommand);
+    runCommand(dir, "auto-install");
 }
 
 function removeServer() {
     if (fs.existsSync(dir)) {
         fs.rmdirSync(dir);
     }
+}
+
+function parseDetails(details) {
+    return {}
+}
+
+function runCommand(dir, command) {
+    // run auto-install
+    const script = `cd ${dir}; ./${serverType} ${command}`;
+    return execSync(script);
 }
 
 module.exports = {
