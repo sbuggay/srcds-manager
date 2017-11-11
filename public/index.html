@@ -1,25 +1,42 @@
 <html>
 
 <head>
-<style>
-    #log {
-        width: 600px;
-        height: 500px;
-    }
-</style>
+    <style>
+        body {
+            background-color: #444;
+            font-family: sans-serif;
+        }
+        #app {
+            width: 800px;
+            margin: 0 auto;
+        }
+        textarea {
+            width: 100%;
+            height: 500px;
+            color: white;
+            background-color: #222;
+            border: 0;
+        }
+
+        #command {
+            margin-top: 10px;
+            width: 100%;
+            color: white;
+            background-color: #222;
+            border: 0;
+        }
+    </style>
 </head>
 
 <body>
-    <form id="rcon-connect-form">
-        <input id="hostname">
-        <input id="password">
-        <button type="submit">submit</button>
-    </form>
-    <textarea id="log">
-    </textarea>
-    <form id="rcon-form">
-        <input id="rcon-command"/>
-    </form>
+    <div id="app">
+        <textarea v-model="log"></textarea>
+        <form v-on:submit.prevent="onSubmit">
+            <input id="command" v-model="command">
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/vue"></script>
     <script src="/scripts/srcds.js"></script>
 </body>
 
