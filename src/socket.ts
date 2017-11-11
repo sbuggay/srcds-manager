@@ -1,9 +1,13 @@
-const WebSocket = require('ws');
-const rcon = require("./rcon");
+import * as WebSocket from "ws";
+import * as rcon from "rcon";
 
 const wss = new WebSocket.Server({ port: 8080 });
 
-function setupWebsocket() {
+export function registerHandler(key) {
+
+}
+
+export function setupWebsocket() {
     wss.on("connection", function connection(connection) {
         connection.on("message", function (message) {
             const data = JSON.parse(message);
@@ -35,7 +39,3 @@ function setupWebsocket() {
         });
     });
 }
-
-module.exports = {
-    setupWebsocket
-};

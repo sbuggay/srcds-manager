@@ -1,10 +1,11 @@
-const express = require("express");
+import * as express from "express";
 const app = express();
-const rcon = require("./rcon");
-const socket = require("./socket");
-const basicAuth = require("express-basic-auth");
 
-const server = require("./server");
+import * as basicAuth from "express-basic-auth";
+
+import * as rcon from "./rcon";
+import * as socket from "./socket";
+import * as server from "./server";
 
 const port = 3000;
 
@@ -26,9 +27,8 @@ rcon.connect({
     console.log(`connection failed ${e}`);
 });
 
-process.on("unhandledRejection", (reason, p) => {
-    console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
-    // application specific logging, throwing an error, or other logic here
+server.runCommand("csgo-2", "details").then(value => {
+    console.log(value);
 });
 
 app.listen(port, function () {
