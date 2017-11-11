@@ -17,7 +17,7 @@ function getDirectories(path: string) {
     return fs.readdirSync(path).map(name => join(path, name)).filter(isDirectory && validateServer);
 }
 
-export function getServers(path = "servers/") {
+export function getServers(path: string) {
     return getDirectories(path);
 }
 
@@ -34,9 +34,7 @@ export function addServer(path: string, serverType: IServer) {
     bash linuxgsm.sh csgoserver`;
     return new Promise((resolve, reject) => {
         exec(downloadCommand, () => {
-            runCommand(path, "auto-install").then(() => {
-                resolve();
-            })
+            return runCommand(path, "auto-install");
         });
     });
 }
@@ -51,13 +49,18 @@ export function parseDetails(details: string) {
     return {}
 }
 
-export function runCommand(path: string, command: string) {
+type ICommand = "start" | "stop" | "restart" | "details" | "update" | "backup" | "install" | "auto-install";
+
+export function runCommand(path: string, command: ICommand) {
     // run auto-install
     const script = `cd ${path}; ./csgoserver ${command}`;
 
     return new Promise((resolve, reject) => {
-        exec(script, () => {
-            resolve(this.toString());
+        exec(script, (error: any, stdout: string, stderr: string) => {
+            if (error) {
+                reject(stderr);
+            }
+            resolve(stdout);
         });
     });
 }

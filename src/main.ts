@@ -9,6 +9,7 @@ import * as server from "./server";
 
 const port = 3000;
 
+// Set up auth
 app.use(basicAuth({
     users: {
         "admin": "braves"
@@ -16,6 +17,7 @@ app.use(basicAuth({
     challenge: true,
 }));
 
+// Use static
 app.use(express.static("public"));
 
 rcon.connect({
@@ -27,11 +29,7 @@ rcon.connect({
     console.log(`connection failed ${error}`);
 });
 
-server.runCommand("csgo-2", "details").then(value => {
-    console.log(value);
-});
-
-app.listen(port, function () {
+app.listen(port, () => {
     socket.setupWebsocket();
     console.log(`server running on port ${port}`);
 });
