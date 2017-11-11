@@ -5,40 +5,48 @@ const connection = new WebSocket("ws://localhost:8080");
 connection.onopen = function () {
     // connection is opened and ready to use
     console.log("websocket connected");
-    log.style.borderColor = "green";
 };
 
 connection.onerror = function (error) {
     // an error occurred when sending/receiving data
-    var log = document.getElementById("log");
 };
 
 connection.onclose = function () {
-    var log = document.getElementById("log");
-    log.style.borderColor = "red";
+
 }
+
+//handlers
+
+let handlers = {};
+
+function registerHandler(key, handler) {
+    handlers[key] = handler;
+}
+
+registerHandler("rcon-response", (data) => {
+    app.log += data;
+});
 
 connection.onmessage = function (message) {
-    var log = document.getElementById("log");
     var json = JSON.parse(message.data);
-    log.value += json.data;
-    console.log(json.data);
+    if (handlers[json.type]) {
+        handlers[json.type](json.data);
+    }
 };
 
-function setupInput() {
-    var form = document.getElementById("rcon-form");
-    var command = document.getElementById("rcon-command");
-    form.addEventListener("submit", function (e) {
-        connection.send(JSON.stringify({
-            type: "rcon-command",
-            data: command.value
-        }));
-
-        command.value = "";
-
-        e.preventDefault();
-        return false;
-    });
-}
-
-setupInput();
+var app = new Vue({
+    el: "#app",
+    data: {
+        command: "",
+        log: ""
+    },
+    methods: {
+        "onSubmit": function (event) {
+            connection.send(JSON.stringify({
+                type: "rcon-command",
+                data: this.command
+            }));
+            this.command = "";
+        }
+    }
+})
