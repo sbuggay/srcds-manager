@@ -23,8 +23,8 @@ rcon.connect({
     password: "admin1c_kxGks"
 }).then(() => {
     console.log("connected");
-}, (e) => {
-    console.log(`connection failed ${e}`);
+}, (error: Error) => {
+    console.log(`connection failed ${error}`);
 });
 
 server.runCommand("csgo-2", "details").then(value => {
