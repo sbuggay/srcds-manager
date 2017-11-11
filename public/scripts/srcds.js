@@ -5,6 +5,8 @@ const connection = new WebSocket("ws://localhost:8080");
 connection.onopen = function () {
     // connection is opened and ready to use
     console.log("websocket connected");
+    var command = document.getElementById("command");
+    command.style.borderColor = "darkgreen";
 };
 
 connection.onerror = function (error) {
@@ -12,7 +14,9 @@ connection.onerror = function (error) {
 };
 
 connection.onclose = function () {
-
+    console.log("websocket disconnect");
+    var command = document.getElementById("command");
+    command.style.borderColor = "darkred";
 }
 
 //handlers
@@ -37,6 +41,8 @@ connection.onmessage = function (message) {
 var app = new Vue({
     el: "#app",
     data: {
+        webSocketConnected: false,
+        rconConnected: false,
         command: "",
         log: ""
     },

@@ -1,31 +1,39 @@
 import * as WebSocket from "ws";
-
-const wss = new WebSocket.Server({ port: 8080 });
+import * as rcon from "../rcon";
 
 interface IWebsocketHandlers {
     [key: string]: any
 }
 
-let handlers: IWebsocketHandlers = {};
+export class WebSocketController {
 
-export function registerHandler(key: string, handler: Function) {
-    handlers[key] = handler;
+    webSocketServer: WebSocket.Server;
+    handlers: IWebsocketHandlers = {};
+
+    constructor(port = 8080) {
+        this.webSocketServer = new WebSocket.Server({ port });
+
+        this.webSocketServer.on("connection", (connection) => {
+            // connected
+
+            connection.on("message", (message) => {
+                const data = JSON.parse(message.toString());
+
+                console.log(data);
+
+                // send to handler
+                if (this.handlers[data.type]) {
+                    this.handlers[data.type](data.data, connection);
+                }
+            });
+            connection.on("close", function () {
+                // disconnected
+            });
+        });
+    }
+
+    registerHandler(key: string, handler: Function) {
+        this.handlers[key] = handler;
+    }
 }
 
-export function setupWebsocket() {
-    wss.on("connection", function connection(connection) {
-        connection.on("message", function (message) {
-            const data = JSON.parse(message.toString());
-
-            console.log(data);
-
-            // send to handler
-            if (handlers[data.type]) {
-                handlers[data.type](data.data, connection);
-            }
-        });
-        connection.on("close", function () {
-            console.log("connection closed");
-        });
-    });
-}

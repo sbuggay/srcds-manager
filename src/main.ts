@@ -4,7 +4,7 @@ const app = express();
 import * as basicAuth from "express-basic-auth";
 
 import * as rcon from "./rcon";
-import * as socket from "./socket";
+import * as socket from "./socket/socket";
 import * as server from "./server";
 
 const port = 3000;

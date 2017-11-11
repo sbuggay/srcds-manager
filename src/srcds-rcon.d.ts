@@ -1,5 +1,3 @@
-
-
 declare module "srcds-rcon" {
     interface RCON {
         connect: () => Promise<any>;
