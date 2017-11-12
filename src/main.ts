@@ -4,7 +4,8 @@ const app = express();
 import * as basicAuth from "express-basic-auth";
 
 import * as rcon from "./rcon";
-import * as socket from "./socket/socket";
+import { WebSocketController } from "./socket/socket";
+import { registerHandlers } from "./socket/handlers";
 import * as server from "./server";
 
 const port = 3000;
@@ -30,6 +31,7 @@ rcon.connect({
 });
 
 app.listen(port, () => {
-    socket.setupWebsocket();
+    const webSocketController = new WebSocketController();
+    registerHandlers(webSocketController);
     console.log(`server running on port ${port}`);
 });

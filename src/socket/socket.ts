@@ -8,27 +8,29 @@ interface IWebsocketHandlers {
 export class WebSocketController {
 
     webSocketServer: WebSocket.Server;
+    connections: WebSocket[];
     handlers: IWebsocketHandlers = {};
 
     constructor(port = 8080) {
         this.webSocketServer = new WebSocket.Server({ port });
 
         this.webSocketServer.on("connection", (connection) => {
-            // connected
-
             connection.on("message", (message) => {
                 const data = JSON.parse(message.toString());
 
-                console.log(data);
-
                 // send to handler
                 if (this.handlers[data.type]) {
-                    this.handlers[data.type](data.data, connection);
+                    this.handlers[data.type](data, connection).then((result: any) => {
+                        if (result) {
+                            connection.send(JSON.stringify(Object.assign({}, data, { data: result })));
+                        }
+                    });
                 }
             });
             connection.on("close", function () {
                 // disconnected
             });
+
         });
     }
 

@@ -3,10 +3,9 @@ window.WebSocket = window.WebSocket || window.MozWebSocket;
 const connection = new WebSocket("ws://localhost:8080");
 
 connection.onopen = function () {
-    // connection is opened and ready to use
-    console.log("websocket connected");
     var command = document.getElementById("command");
     command.style.borderColor = "darkgreen";
+    connection.send(JSON.stringify({ type: "get-servers" }));
 };
 
 connection.onerror = function (error) {
@@ -14,7 +13,6 @@ connection.onerror = function (error) {
 };
 
 connection.onclose = function () {
-    console.log("websocket disconnect");
     var command = document.getElementById("command");
     command.style.borderColor = "darkred";
 }
@@ -23,20 +21,45 @@ connection.onclose = function () {
 
 let handlers = {};
 
-function registerHandler(key, handler) {
-    handlers[key] = handler;
-}
+// function registerHandler(key, handler) {
+//     handlers[key] = handler;
+// }
 
-registerHandler("rcon-response", (data) => {
-    app.log += data;
-});
+// registerHandler("rcon-response", (data) => {
+//     app.log += data;
+// });
+
+// registerHandler("get-servers", (data) => {
+//     console.log(data);
+// });
 
 connection.onmessage = function (message) {
     var json = JSON.parse(message.data);
-    if (handlers[json.type]) {
-        handlers[json.type](json.data);
+    const key = json.key;
+    console.log(json);
+    if (key) {
+        if (handlers[key]) {
+            handlers[key].resolve(json.data);
+        }
+        console.error('Unknown key!!!');
+    } else {
+        console.error('No key!');
     }
 };
+
+function send(message) {
+    const key = uuid();
+    message = Object.assign({}, { key }, message);
+    console.log(message);
+    connection.send(JSON.stringify(message));
+
+    return new Promise((resolve, reject) => {
+        handlers[key] = {
+            resolve,
+            reject
+        };
+    });
+}
 
 var app = new Vue({
     el: "#app",
@@ -44,15 +67,29 @@ var app = new Vue({
         webSocketConnected: false,
         rconConnected: false,
         command: "",
-        log: ""
+        log: "",
+        servers: []
     },
     methods: {
         "onSubmit": function (event) {
-            connection.send(JSON.stringify({
+            send({
                 type: "rcon-command",
                 data: this.command
-            }));
-            this.command = "";
+            }).then(data => {
+                this.log += data;
+            });;
+            this.command = "";  
+        },
+        "logScroll": function () {
+            var log = document.getElementById("log");
+            log.scrollTop = log.scrollHeight;
         }
     }
-})
+});
+
+function uuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
