@@ -5,7 +5,6 @@ const connection = new WebSocket("ws://localhost:8080");
 connection.onopen = function () {
     var command = document.getElementById("command");
     command.style.borderColor = "darkgreen";
-    connection.send(JSON.stringify({ type: "get-servers" }));
 };
 
 connection.onerror = function (error) {
@@ -18,39 +17,26 @@ connection.onclose = function () {
 }
 
 //handlers
-
 let handlers = {};
-
-// function registerHandler(key, handler) {
-//     handlers[key] = handler;
-// }
-
-// registerHandler("rcon-response", (data) => {
-//     app.log += data;
-// });
-
-// registerHandler("get-servers", (data) => {
-//     console.log(data);
-// });
 
 connection.onmessage = function (message) {
     var json = JSON.parse(message.data);
     const key = json.key;
-    console.log(json);
     if (key) {
         if (handlers[key]) {
-            handlers[key].resolve(json.data);
+            if (json.error) {
+                handlers[key].reject(json.error);
+            } else {
+                handlers[key].resolve(json.data);
+            }
+            delete handlers[key];
         }
-        console.error('Unknown key!!!');
-    } else {
-        console.error('No key!');
     }
 };
 
 function send(message) {
     const key = uuid();
     message = Object.assign({}, { key }, message);
-    console.log(message);
     connection.send(JSON.stringify(message));
 
     return new Promise((resolve, reject) => {
@@ -68,17 +54,25 @@ var app = new Vue({
         rconConnected: false,
         command: "",
         log: "",
+        address: "devan.space",
+        password: "braves",
         servers: []
     },
     methods: {
-        "onSubmit": function (event) {
+        "onConnectSubmit": function (event) {
+            console.log(event);
+            console.log("test");
+        },
+        "onCommandSubmit": function (event) {
             send({
                 type: "rcon-command",
                 data: this.command
             }).then(data => {
                 this.log += data;
-            });;
-            this.command = "";  
+            }, error => {
+                console.error(data);
+            });
+            this.command = "";
         },
         "logScroll": function () {
             var log = document.getElementById("log");
@@ -88,8 +82,8 @@ var app = new Vue({
 });
 
 function uuid() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == "x" ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
 }

@@ -21,9 +21,7 @@
             border: 0;
         }
 
-        #command {
-            margin-top: 10px;
-            width: 100%;
+        input {
             color: white;
             background-color: #222;
         }
@@ -32,13 +30,17 @@
 
 <body>
     <div id="app">
+        <form v-on:submit.prevent="onConnectSubmit">
+            <input name="address" v-model="address">
+            <input name="password" v-model="password">
+        </form>
         <textarea id="log" readonly v-model="log"></textarea>
-        <form v-on:submit.prevent="onSubmit">
+        <form v-on:submit.prevent="onCommandSubmit">
             <input id="command" v-model="command">
         </form>
     </div>
 
-    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.3/vue.min.js"></script>
     <script src="/scripts/srcds.js"></script>
 </body>
 
